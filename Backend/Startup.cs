@@ -10,6 +10,35 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
+// Criar base para a API
+// dotnet new webapi
+
+// Se instala somente uma vez, pois é global
+// Istalamos o Entity Framework
+// dotnet tool install --global dotnet-ef
+// --------------------------------------
+
+
+// Se instala sempre que necessário em cada projeto
+// -------------------------------------------------
+// Baixamos o pacote SQLServer do Entity Framework
+// dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+
+// Baixamos o pacote que irá escrever nossos códigos
+// dotnet add package Microsoft.EntityFrameworkCore.Design
+
+// Testamos se os pacotes foram instalados
+// dotnet restore
+
+// Testamos a instalação do EF
+// dotnet ef
+
+// Código que criará o nosso Contexto da Base de Dados e nosso Models
+// dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=Gufos; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Models -d
+// -o Identificação dos arquivos de origem
+// -d Identifca primary key, foreign key, tamanho dos caracteres
 
 namespace Backend
 {
@@ -23,9 +52,14 @@ namespace Backend
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // Mudamos o:
+        // services.AddControllers. PARA:
+        // services.AddControllers.WithViews().AddNewtonsoftJson( opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore );
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllersWithViews().AddNewtonsoftJson(
+                opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
