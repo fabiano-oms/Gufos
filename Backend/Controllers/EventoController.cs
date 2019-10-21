@@ -15,11 +15,15 @@ namespace Backend.Controllers {
         GufosContext _contexto = new GufosContext ();
 
         // GET: api/Evento
+        /// <summary>
+        /// Pegamos todos os Eventos cadastrados
+        /// </summary>
+        /// <returns>Lista de Eventos</returns>
         [HttpGet]
         public async Task<ActionResult<List<Evento>>> Get () {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo
             // Include("") Adiciona
-            var eventos = await _contexto.Evento.Include("Categoria").Include("Localizacao").ToListAsync ();
+            var eventos = await _contexto.Evento.Include("IdCategoriaNavigation").Include("IdLocalizacaoNavigation").ToListAsync ();
 
             if (eventos == null) {
                 return NotFound ();
@@ -32,7 +36,8 @@ namespace Backend.Controllers {
         public async Task<ActionResult<Evento>> Get (int id) {
             // FindAsync = procura
             // FirstOrDefaultAsync(x => x.IdNomedocampo == id)
-            var evento = await _contexto.Evento.Include("Categoria").Include("Localizacao").FirstOrDefaultAsync(e => e.IdEvento == id);
+            // c => c.IdCategoria
+            var evento = await _contexto.Evento.Include("IdCategoriaNavigation").Include("IdLocalizacaoNavigation").FirstOrDefaultAsync(e => e.IdEvento == id);
 
             if (evento == null) {
                 return NotFound ();
@@ -54,6 +59,7 @@ namespace Backend.Controllers {
             return evento;
         }
 
+        // PUT api/Evento
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, Evento evento){
             // Se o Id do objeto não existir, ele retorna o "erro 404"

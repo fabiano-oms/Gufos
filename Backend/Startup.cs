@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using System.IO;
 
 // Criar base para a API
 // dotnet new webapi
@@ -19,7 +22,6 @@ using Newtonsoft.Json;
 // Istalamos o Entity Framework
 // dotnet tool install --global dotnet-ef
 // --------------------------------------
-
 
 // Se instala sempre que necessário em cada projeto
 // -------------------------------------------------
@@ -40,45 +42,58 @@ using Newtonsoft.Json;
 // -o Identificação dos arquivos de origem
 // -d Identifca primary key, foreign key, tamanho dos caracteres
 
-namespace Backend
-{
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
+// SWAGGER - Documentação
+// dotnet add Backend.csproj package Swashbuckle.AspNetCore -v 5.0.0-rc4
+
+namespace Backend {
+    public class Startup {
+        public Startup (IConfiguration configuration) {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // Mudamos o:
+        // Mudamos o: para configurar como os objetos relacionados aparecerão nos retornos
         // services.AddControllers. PARA:
         // services.AddControllers.WithViews().AddNewtonsoftJson( opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore );
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllersWithViews().AddNewtonsoftJson(
+        public void ConfigureServices (IServiceCollection services) {
+            services.AddControllersWithViews ().AddNewtonsoftJson (
                 opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             );
+
+            // Configuramos o Swagger
+            services.AddSwaggerGen (c => {
+                c.SwaggerDoc ("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+
+                // Definimos o caminho e arquivo temporário de documentação
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
+        public void Configure (IApplicationBuilder app, IWebHostEnvironment env) {
+            if (env.IsDevelopment ()) {
+                app.UseDeveloperExceptionPage ();
             }
 
-            app.UseHttpsRedirection();
+            // Usamos efetivamente o SWAGGER "Aqui que o swagger será utilizado"
+            app.UseSwagger();
+            // Especificamos o Endpoint na Aplicação "url da documentação"
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+            });
 
-            app.UseRouting();
+            app.UseHttpsRedirection ();
 
-            app.UseAuthorization();
+            app.UseRouting ();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
+            app.UseAuthorization ();
+
+            app.UseEndpoints (endpoints => {
+                endpoints.MapControllers ();
             });
         }
     }

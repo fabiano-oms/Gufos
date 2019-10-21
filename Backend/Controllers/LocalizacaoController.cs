@@ -49,6 +49,7 @@ namespace Backend.Controllers {
             return localizacao;
         }
 
+        // PUT api/Localizacao
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, Localizacao localizacao){
             // Se o Id do objeto não existir, ele retorna o "erro 404"

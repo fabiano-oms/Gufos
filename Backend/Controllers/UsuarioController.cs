@@ -8,65 +8,65 @@ namespace Backend.Controllers {
     // Definimos nossa rota do controller e dizemos que é um controller de API
     [Route ("api/[Controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase {
+    public class UsuarioController : ControllerBase {
         GufosContext _contexto = new GufosContext ();
 
-        // GET: api/Categoria
+        // GET: api/Usuario
         [HttpGet]
-        public async Task<ActionResult<List<Categoria>>> Get () {
+        public async Task<ActionResult<List<Usuario>>> Get () {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo
-            var categorias = await _contexto.Categoria.ToListAsync ();
+            var usuarios = await _contexto.Usuario.Include("IdTipoUsuarioNavigation").ToListAsync ();
 
-            if (categorias == null) {
+            if (usuarios == null) {
                 return NotFound ();
             }
-            return categorias;
+            return usuarios;
         }
         
-        // GET: api/Categoria/2
+        // GET: api/Usuario/2
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> Get (int id) {
+        public async Task<ActionResult<Usuario>> Get (int id) {
             // FindAsync = procura
-            var categoria = await _contexto.Categoria.FindAsync(id);
+            var usuario = await _contexto.Usuario.Include("IdTipoUsuarioNavigation").FirstOrDefaultAsync(e => e.IdUsuario == id);
 
-            if (categoria == null) {
+            if (usuario == null) {
                 return NotFound ();
             }
-            return categoria;
+            return usuario;
         }
 
-        // POST api/Categoria
+        // POST api/Usuario
         [HttpPost]
         // Post(Objeto atributo)
-        public async Task<ActionResult<Categoria>> Post(Categoria categoria){
+        public async Task<ActionResult<Usuario>> Post(Usuario usuario){
             try{
                 // Tratamos contra ataques de SQL Injection
-                await _contexto.AddAsync(categoria);
+                await _contexto.AddAsync(usuario);
                 // Salvamos efetivamente o nosso objeto no banco de dados
                 await _contexto.SaveChangesAsync();
             }catch(DbUpdateConcurrencyException){
             }
-            return categoria;
+            return usuario;
         }
 
-        // PUT api/Categoria
+        // PUT api/Usuario
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Categoria categoria){
+        public async Task<ActionResult> Put(int id, Usuario usuario){
             // Se o Id do objeto não existir, ele retorna o "erro 404"
-            if(id != categoria.IdCategoria){
+            if(id != usuario.IdUsuario){
                 return BadRequest();
             }
 
             // Comparamos os atributos que foram modificados através do EF
-            _contexto.Entry(categoria).State = EntityState.Modified;
+            _contexto.Entry(usuario).State = EntityState.Modified;
 
             try{
                 await _contexto.SaveChangesAsync();
             }catch(DbUpdateConcurrencyException){
                 // Verificamos se o objeto inserido realmente existe no banco
-                var categoria_valido = await _contexto.Categoria.FindAsync(id);
+                var usuario_valido = await _contexto.Usuario.FindAsync(id);
 
-                if(categoria_valido == null){
+                if(usuario_valido == null){
                     return NotFound();
                 }else{
                     throw;
@@ -75,18 +75,18 @@ namespace Backend.Controllers {
             return NoContent();
         }
 
-        // DELETE api/categoria/id
+        // DELETE api/usuario/id
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Categoria>> Delete(int id){
-            var categoria = await _contexto.Categoria.FindAsync(id);
-            if(categoria == null){
+        public async Task<ActionResult<Usuario>> Delete(int id){
+            var usuario = await _contexto.Usuario.FindAsync(id);
+            if(usuario == null){
                 return NotFound();
             }
 
-            _contexto.Categoria.Remove(categoria);
+            _contexto.Usuario.Remove(usuario);
             await _contexto.SaveChangesAsync();
 
-            return categoria;
+            return usuario;
         }
 
     }
