@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 // Criar base para a API
 // dotnet new webapi
@@ -24,7 +27,7 @@ using System.IO;
 // --------------------------------------
 
 // Se instala sempre que necessário em cada projeto
-// -------------------------------------------------
+// -------------------------------------------
 // Baixamos o pacote SQLServer do Entity Framework
 // dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 
@@ -42,8 +45,13 @@ using System.IO;
 // -o Identificação dos arquivos de origem
 // -d Identifca primary key, foreign key, tamanho dos caracteres
 
+// -------------------------------------------
 // SWAGGER - Documentação
 // dotnet add Backend.csproj package Swashbuckle.AspNetCore -v 5.0.0-rc4
+
+// JWT - JSON WEB Token
+// Adicionamos o pacote JWT
+// dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 3.0.0
 
 namespace Backend {
     public class Startup {
@@ -71,6 +79,21 @@ namespace Backend {
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            // Configuramos o JWT
+            // => arrow function
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                options => {
+                    options.TokenValidationParameters = new TokenValidationParameters {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,6 +108,9 @@ namespace Backend {
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
             });
+
+            // Usamos efetivamente a autentificação
+            app.UseAuthentication ();
 
             app.UseHttpsRedirection ();
 

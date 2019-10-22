@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,12 @@ namespace Backend.Controllers {
     // Definimos nossa rota do controller e dizemos que é um controller de API
     [Route ("api/[Controller]")]
     [ApiController]
+    [Authorize]
     public class UsuarioController : ControllerBase {
         GufosContext _contexto = new GufosContext ();
 
         // GET: api/Usuario
+        // [Authorize] para requirir autentificação apenas neste metodo
         [HttpGet]
         public async Task<ActionResult<List<Usuario>>> Get () {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo

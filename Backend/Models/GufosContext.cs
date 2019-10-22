@@ -101,11 +101,11 @@ namespace Backend.Models
                 entity.HasKey(e => e.IdTipoUsuario)
                     .HasName("PK__tipo_usu__689D5FEA0BB9589E");
 
-                entity.HasIndex(e => e.TipoUsuario1)
+                entity.HasIndex(e => e.TipoUsuarioNome)
                     .HasName("UQ__tipo_usu__CBC5E6FBE0D7BBF2")
                     .IsUnique();
 
-                entity.Property(e => e.TipoUsuario1).IsUnicode(false);
+                entity.Property(e => e.TipoUsuarioNome).IsUnicode(false);
             });
 
             modelBuilder.Entity<Usuario>(entity =>
@@ -121,7 +121,7 @@ namespace Backend.Models
 
                 entity.Property(e => e.Senha).IsUnicode(false);
 
-                entity.Property(e => e.Usuario1).IsUnicode(false);
+                entity.Property(e => e.UsuarioNome).IsUnicode(false);
 
                 entity.HasOne(d => d.IdTipoUsuarioNavigation)
                     .WithMany(p => p.Usuario)

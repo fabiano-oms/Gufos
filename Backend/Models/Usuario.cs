@@ -19,7 +19,7 @@ namespace Backend.Models
         [Required]
         [Column("Usuario")]
         [StringLength(255)]
-        public string Usuario1 { get; set; }
+        public string UsuarioNome { get; set; }
         [Required]
         [StringLength(255)]
         public string Email { get; set; }
