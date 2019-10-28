@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Backend.Domains;
+using Backend.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,16 +27,10 @@ namespace Backend.Controllers {
         }
 
         // Chamamos nosso método para validar o usuário na aplicação
-        private Usuario ValidaUsuario (Usuario login) {
+        private Usuario ValidaUsuario (LoginViewModel login) {
             var usuario = _context.Usuario.FirstOrDefault (
                 u => u.Email == login.Email && u.Senha == login.Senha
             );
-
-            // confirmando se o usuario ja está no banco de dados
-            if (usuario != null) {
-                usuario = login;
-            }
-
             return usuario;
         }
 
@@ -67,7 +62,7 @@ namespace Backend.Controllers {
         // Usamos essa anotação para ignorar a autentificação nesse método
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Login([FromBody]Usuario login){
+        public IActionResult Login([FromBody]LoginViewModel login){
             IActionResult response = Unauthorized();
             var user = ValidaUsuario(login);
             if(user != null){

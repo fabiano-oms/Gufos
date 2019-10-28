@@ -19,7 +19,6 @@ namespace Backend.Controllers {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo
             // /Mudamos de/ await _contexto.Categoria.ToListAsync(); /PARA/ await _repositorio.Listar (); /utilizando o Método do CategoriaRepository/
             var categorias = await _repositorio.Listar ();
-
             if (categorias == null) {
                 return NotFound ();
             }

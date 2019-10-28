@@ -19,7 +19,6 @@ namespace Backend.Repositories {
             using (GufosContext _contexto = new GufosContext ()) {
                 return await _contexto.Categoria.FindAsync (id);
             }
-
         }
 
         public async Task<Categoria> Excluir (Categoria categoria) {

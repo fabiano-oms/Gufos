@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend.Domains;
+using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,8 @@ namespace Backend.Controllers {
     [Route ("api/[Controller]")]
     [ApiController]
     public class EventoController : ControllerBase {
-        GufosContext _contexto = new GufosContext ();
+        // GufosContext _contexto = new GufosContext ();
+        EventoRepository _repositorio = new EventoRepository ();
 
         // GET: api/Evento
         /// <summary>
@@ -23,21 +25,21 @@ namespace Backend.Controllers {
         public async Task<ActionResult<List<Evento>>> Get () {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo
             // Include("") Adiciona
-            var eventos = await _contexto.Evento.Include("IdCategoriaNavigation").Include("IdLocalizacaoNavigation").ToListAsync ();
+            var eventos = await _repositorio.Listar ();
 
             if (eventos == null) {
                 return NotFound ();
             }
             return eventos;
         }
-        
+
         // GET: api/Evento/2
-        [HttpGet("{id}")]
+        [HttpGet ("{id}")]
         public async Task<ActionResult<Evento>> Get (int id) {
             // FindAsync = procura
             // FirstOrDefaultAsync(x => x.IdNomedocampo == id)
             // c => c.IdCategoria
-            var evento = await _contexto.Evento.Include("IdCategoriaNavigation").Include("IdLocalizacaoNavigation").FirstOrDefaultAsync(e => e.IdEvento == id);
+            var evento = await _repositorio.BuscarPorID (id);
 
             if (evento == null) {
                 return NotFound ();
@@ -48,54 +50,44 @@ namespace Backend.Controllers {
         // POST api/Evento
         [HttpPost]
         // Post(Objeto atributo)
-        public async Task<ActionResult<Evento>> Post(Evento evento){
-            try{
-                // Tratamos contra ataques de SQL Injection
-                await _contexto.AddAsync(evento);
-                // Salvamos efetivamente o nosso objeto no banco de dados
-                await _contexto.SaveChangesAsync();
-            }catch(DbUpdateConcurrencyException){
+        public async Task<ActionResult<Evento>> Post (Evento evento) {
+            try {
+                await _repositorio.Salvar (evento);
+            } catch (DbUpdateConcurrencyException) {
+                throw;
             }
             return evento;
         }
 
         // PUT api/Evento
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Evento evento){
+        [HttpPut ("{id}")]
+        public async Task<ActionResult> Put (int id, Evento evento) {
             // Se o Id do objeto não existir, ele retorna o "erro 404"
-            if(id != evento.IdEvento){
-                return BadRequest();
+            if (id != evento.IdEvento) {
+                return BadRequest ();
             }
-
-            // Comparamos os atributos que foram modificados através do EF
-            _contexto.Entry(evento).State = EntityState.Modified;
-
-            try{
-                await _contexto.SaveChangesAsync();
-            }catch(DbUpdateConcurrencyException){
+            try {
+                await _repositorio.Alterar (evento);
+            } catch (DbUpdateConcurrencyException) {
                 // Verificamos se o objeto inserido realmente existe no banco
-                var evento_valido = await _contexto.Evento.FindAsync(id);
+                var evento_valido = await _repositorio.BuscarPorID (id);
 
-                if(evento_valido == null){
-                    return NotFound();
-                }else{
+                if (evento_valido == null) {
+                    return NotFound ();
+                } else {
                     throw;
                 }
             }
-            return NoContent();
+            return NoContent ();
         }
 
         // DELETE api/evento/id
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Evento>> Delete(int id){
-            var evento = await _contexto.Evento.FindAsync(id);
-            if(evento == null){
-                return NotFound();
+        [HttpDelete ("{id}")]
+        public async Task<ActionResult<Evento>> Delete (int id) {
+            var evento = await _repositorio.BuscarPorID (id);
+            if (evento == null) {
+                return NotFound ();
             }
-
-            _contexto.Evento.Remove(evento);
-            await _contexto.SaveChangesAsync();
-
             return evento;
         }
 
