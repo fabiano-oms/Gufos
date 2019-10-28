@@ -40,8 +40,13 @@ using System.Text;
 // Testamos a instalação do EF
 // dotnet ef
 
+//--------------------------------
 // Código que criará o nosso Contexto da Base de Dados e nosso Models
 // dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=Gufos; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Models -d
+//--------------------------------
+// Reestruturando o projeto para padrões de mercado
+// dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=Gufos; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Domains -d
+
 // -o Identificação dos arquivos de origem
 // -d Identifca primary key, foreign key, tamanho dos caracteres
 
