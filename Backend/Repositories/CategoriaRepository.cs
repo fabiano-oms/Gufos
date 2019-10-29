@@ -37,9 +37,7 @@ namespace Backend.Repositories {
 
         public async Task<Categoria> Salvar (Categoria categoria) {
             using (GufosContext _contexto = new GufosContext ()) {
-                // Tratamos contra ataques de SQL Injection
                 await _contexto.AddAsync (categoria);
-                // Salvamos efetivamente o nosso objeto no banco de dados
                 await _contexto.SaveChangesAsync ();
                 return categoria;
             }

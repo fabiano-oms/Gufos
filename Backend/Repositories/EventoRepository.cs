@@ -12,6 +12,8 @@ namespace Backend.Repositories {
                 await _contexto.SaveChangesAsync ();
             }
             return evento;
+
+            
         }
 
         public async Task<Evento> BuscarPorID (int id) {

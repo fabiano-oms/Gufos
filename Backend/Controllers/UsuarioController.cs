@@ -10,25 +10,25 @@ namespace Backend.Controllers {
     // Definimos nossa rota do controller e dizemos que é um controller de API
     [Route ("api/[Controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize (Roles = "1")]
     public class UsuarioController : ControllerBase {
-        UsuarioRepository _repositorio = new UsuarioRepository();
+        UsuarioRepository _repositorio = new UsuarioRepository ();
 
         // GET: api/Usuario
         // [Authorize] para requirir autentificação apenas neste metodo
         [HttpGet]
         public async Task<ActionResult<List<Usuario>>> Get () {
             // O que é metodo assincrono: possibilidade de executar varios métodos em simultâneo
-            var usuarios = await _repositorio.Listar();
+            var usuarios = await _repositorio.Listar ();
 
             if (usuarios == null) {
                 return NotFound ();
             }
             return usuarios;
         }
-        
+
         // GET: api/Usuario/2
-        [HttpGet("{id}")]
+        [HttpGet ("{id}")]
         public async Task<ActionResult<Usuario>> Get (int id) {
             // FindAsync = procura
             var usuario = await _repositorio.BuscarPorID (id);
@@ -42,42 +42,42 @@ namespace Backend.Controllers {
         // POST api/Usuario
         [HttpPost]
         // Post(Objeto atributo)
-        public async Task<ActionResult<Usuario>> Post(Usuario usuario){
-            try{
+        public async Task<ActionResult<Usuario>> Post (Usuario usuario) {
+            try {
                 await _repositorio.Salvar (usuario);
-            }catch(DbUpdateConcurrencyException){
+            } catch (DbUpdateConcurrencyException) {
                 throw;
             }
             return usuario;
         }
 
         // PUT api/Usuario
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Usuario usuario){
+        [HttpPut ("{id}")]
+        public async Task<ActionResult> Put (int id, Usuario usuario) {
             // Se o Id do objeto não existir, ele retorna o "erro 404"
-            if(id != usuario.IdUsuario){
-                return BadRequest();
+            if (id != usuario.IdUsuario) {
+                return BadRequest ();
             }
-            try{
+            try {
                 await _repositorio.Alterar (usuario);
-            }catch(DbUpdateConcurrencyException){
+            } catch (DbUpdateConcurrencyException) {
                 // Verificamos se o objeto inserido realmente existe no banco
                 var usuario_valido = await _repositorio.BuscarPorID (id);
-                if(usuario_valido == null){
-                    return NotFound();
-                }else{
+                if (usuario_valido == null) {
+                    return NotFound ();
+                } else {
                     throw;
                 }
             }
-            return NoContent();
+            return NoContent ();
         }
 
         // DELETE api/usuario/id
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Usuario>> Delete(int id){
+        [HttpDelete ("{id}")]
+        public async Task<ActionResult<Usuario>> Delete (int id) {
             var usuario = await _repositorio.BuscarPorID (id);
-            if(usuario == null){
-                return NotFound();
+            if (usuario == null) {
+                return NotFound ();
             }
             return usuario;
         }
