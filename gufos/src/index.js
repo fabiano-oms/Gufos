@@ -11,6 +11,21 @@ import Login from './Assets/pages/Login/Login';
 import Eventos from './Assets/pages/Eventos/Eventos';
 import NotFound from './Assets/pages/NotFound/NotFound';
 
+//importa o css padrão
+import './Assets/css/flexbox.css';
+import './Assets/css/reset.css';
+import './Assets/css/style.css';
+
+import './Assets/css/cabecalho.css';
+import './Assets/css/rodape.css';
+import './Assets/css/login.css';
+
+
+//importamos da documentação do MDB
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-css-only/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
+
 //realizar a criação das rotas
 //path endereça uma página
 //direto no component para endereçar um erro (pq é como se não fosse encontrada uma rota)

@@ -1,5 +1,6 @@
 import React from 'react';
 import Footer from '../../components/Footer/Footer';
+import Header from '../../components/Header/Header';
 
 //é estático
 
@@ -7,6 +8,7 @@ import Footer from '../../components/Footer/Footer';
 function App() {
   return (
     <div className="App">
+      <Header/>
       <section className="conteudoImagem">
         <div>
           <h1>Gufos</h1>

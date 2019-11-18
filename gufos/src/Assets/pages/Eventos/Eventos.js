@@ -1,6 +1,7 @@
 //importa uma biblioteca de códigos para classes
 import React, { Component } from 'react';
 import Footer from '../../components/Footer/Footer'
+import Header from '../../components/Header/Header';
 
 class Eventos extends Component {
     //são estados que precisam ser renderizados a cada mudança
@@ -9,6 +10,7 @@ class Eventos extends Component {
         // <Footer/> chamamos a componente footer para a pagina        
         return (
             <div>
+                <Header/>
                 <main className="conteudoPrincipal">
                     <section className="conteudoPrincipal-cadastro">
                         <h1 className="conteudoPrincipal-cadastro-titulo">Eventos</h1>

@@ -1,7 +1,7 @@
 //importa uma biblioteca de códigos para classes
 import React, { Component } from 'react';
 import Footer from '../../components/Footer/Footer'
-
+import Header from '../../components/Header/Header';
 
 //é feito uma extensão do Componente (usa a extensão)
 class Login extends Component {
@@ -11,6 +11,7 @@ class Login extends Component {
         // <Footer/> chamamos a componente footer para a pagina        
         return (
             <div>
+                <Header/>
                 <section className="container flex">
                     <div className="img__login">
                         <div className="img__overlay">

@@ -87,7 +87,8 @@ namespace Backend.Controllers {
             if (categoria == null) {
                 return NotFound ();
             }
-            // _contexto.Categoria.Remove (categoria);
+            await _repositorio.Excluir (categoria);
+            
             // await _contexto.SaveChangesAsync ();            /FOI ENVIADO PARA CategoriaRepository/
             return categoria;
         }
