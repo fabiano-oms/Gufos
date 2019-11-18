@@ -45,7 +45,7 @@ using Newtonsoft.Json;
 // dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=Gufos; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Models -d
 //--------------------------------
 // Reestruturando o projeto para padrões de mercado
-// dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=Gufos; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Domains -d
+// dotnet ef dbcontext scaffold "Server=DESKTOP-LNH3DKI\SQLEXPRESS; Database=XepaDigital; User Id=sa; Password=132" Microsoft.EntityFrameworkCore.SqlServer -o Domains -d
 
 // -o Identificação dos arquivos de origem
 // -d Identifca primary key, foreign key, tamanho dos caracteres
@@ -64,6 +64,9 @@ namespace Backend {
             Configuration = configuration;
         }
 
+        //para habilitar o cors
+        readonly string PermissaoEntreOrigens = "_PermissaoEntreOrigens";
+    
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -102,15 +105,10 @@ namespace Backend {
             );
 
             // Configuramos o Cors
-            services.AddCors (
-                options => {
-                    options.AddPolicy ("AllowMyOrigin",
-                        builder => builder.AllowAnyOrigin ()
-                        .AllowAnyMethod ()
-                        .AllowAnyHeader ()
-                        .AllowCredentials ());
-                }
-            );
+            services.AddCors (options => {
+                options.AddPolicy (PermissaoEntreOrigens,
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -129,9 +127,10 @@ namespace Backend {
             // Usamos efetivamente a autentificação
             app.UseAuthentication ();
 
+            // Usamos o Cors
             app.UseCors (builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
-            app.UseHttpsRedirection ();
+            // app.UseHttpsRedirection ();
 
             app.UseRouting ();
 
