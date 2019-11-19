@@ -21,3 +21,7 @@ insert into evento (Titulo_Evento, Data_Evento, Acesso_Livre, Id_Categoria, Id_L
 insert into presenca (Status_Pesenca, Id_Usuario, Id_Evento) values
 ('AGUARDANDO',2,1),
 ('CONFIRMADO',1,1);
+
+
+
+delete from evento where id_Evento=3;
