@@ -30,8 +30,13 @@ class Categorias extends Component {
             editarModal: {
                 idCategoria: "",
                 tituloCategoria: ""
-            }
+            },
+            // Criando um estado para verificar o carregament
+            loading: false,
+            // Mensagem de erro
+            erroMsg: ""
         }
+
         // *Faz a ligação de todos os Métodos
         // Damos o ".bind" quando não utilizamos o "arrow function"
         // Nesse caso "cadastrarCategoria (parâmetro)"
@@ -68,10 +73,19 @@ class Categorias extends Component {
 
     // Método GET - Listar
     listaAtualizada = () => {
+
+        // Habilita o ícone de carregando
+        this.setState({ loading: true })
+
         fetch("http://localhost:5000/api/Categoria")
             .then(response => response.json())
             // Preenche a lista vazia com dados do Banco
             .then(data => this.setState({ lista: data }))
+
+        // Desabilita o ícone de carregando após 2 segundos
+        setTimeout(() => {
+            this.setState({ loading: false })
+        }, 2000);
     }
 
     // Metodo POST - Cadastrar
@@ -104,6 +118,8 @@ class Categorias extends Component {
     deletarCategoria = (id) => {
         console.log("Excluindo");
 
+        this.setState({ erroMsg: "" })
+
         fetch("http://localhost:5000/api/Categoria/" + id, {
             method: "DELETE",
             headers: {
@@ -117,7 +133,12 @@ class Categorias extends Component {
                 // deve ser comentada para evitar chamar a lista com o valor que foi deletado
                 // this.setState(() => ({ lista: this.state.lista }))
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                console.log(error)
+                this.setState({
+                    erroMsg: "Não é possível excluir esta categoria, verifique se não há eventos que a utilizem"
+                })
+            })
     }
 
     // Acionado quando clicamos no botão Editar para capturar e salvar no state os dados atuais
@@ -182,7 +203,7 @@ class Categorias extends Component {
         // <Footer/> chamamos a componente footer para a pagina        
         return (
             <div>
-                <Header/>
+                <Header />
                 <main className="conteudoPrincipal">
                     <section className="conteudoPrincipal-cadastro">
                         <h1 className="conteudoPrincipal-cadastro-titulo">Categorias</h1>
@@ -217,6 +238,15 @@ class Categorias extends Component {
                                     }
                                 </tbody>
                             </table>
+
+                            {/* Verifica e caso haja uma msg de erro ele mostra abaixo da tabela */}
+                            {this.state.erroMsg && <div className="text-danger">{this.state.erroMsg}</div>}
+
+                            {/* Verifica se o estado de loading está como true e mostra o ícone de carregando */}
+                            {/* EXIBE O ÍCONE DE LOADING */}
+                            {/* fas fa-spinner é o ícone de loading & fa-spin faz ele girar & fa-2x é tamanho */}
+                            {this.state.loading && <i className="fas fa-spinner fa-spin fa-2x blue-text"></i>}
+
                         </div>
 
                         <div className="container" id="conteudoPrincipal-cadastro">
