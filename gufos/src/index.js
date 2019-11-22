@@ -4,7 +4,7 @@ import './index.css';
 import App from './Assets/pages/Home/App';
 import * as serviceWorker from './serviceWorker';
 //importar o router para poder usar as rotas
-import {Route, BrowserRouter as Router,Switch} from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 //importa o caminho da página a ser acessada
 import Categorias from './Assets/pages/Categorias/Categorias';
 import Login from './Assets/pages/Login/Login';
@@ -21,10 +21,36 @@ import './Assets/css/rodape.css';
 import './Assets/css/login.css';
 
 
+
 //importamos da documentação do MDB
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
+import { usuarioAutenticado, parseJwt } from './Services/auth';
+
+const PermissaoAdmin = ({ component : Component }) => (
+    <Route render={props =>
+        usuarioAutenticado() && parseJwt().Role === "1" ?
+        (
+            <Component {...props}/>
+        ) : (
+            <Redirect to={{ pathname: "/Login" }}/>
+        )
+    }
+    />
+)
+
+const PermissaoAluno = ({ component : Component }) => (
+    <Route render={props =>
+        usuarioAutenticado() && parseJwt().Role === "2" ?
+        (
+            <Component {...props}/>
+        ) : (
+            <Redirect to={{ pathname: "/Login" }}/>
+        )
+    }
+    />
+)
 
 //realizar a criação das rotas
 //path endereça uma página
@@ -34,13 +60,28 @@ const Rotas = (
     <Router>
         <div>
             <Switch>
-            <Route exact path = "/" component = {App}/>
-            <Route path = "/Eventos" component = {() =>
-                <Eventos titulo_pagina="Eventos - Gufos"/>}/>
-            <Route path = "/Categorias" component = {() => 
-                <Categorias titulo_pagina="Categorias - Gufos"/>}/>
-            <Route path = "/Login" component = {Login}/>
-            <Route component = {NotFound}/>
+                <Route exact path="/" component={App}
+                    // <App
+                    //     titulo_pagina="Home - Gufos"
+                    // />}
+                />
+                <PermissaoAluno path="/Eventos" component={Eventos}
+                    // <Eventos
+                    //     titulo_pagina="Eventos - Gufos"
+                    // />}
+                />
+                <PermissaoAdmin path="/Categorias" component={Categorias}
+                    // <Categorias
+                    //     titulo_pagina="Categorias - Gufos"
+                    // />}
+                />
+                <Route path="/Login" component={Login}
+                    // <Login
+                    //     titulo_pagina="Login - Gufos"
+                    //     url="/Login"
+                    // />}
+                />
+                <Route component={NotFound} />
             </Switch>
         </div>
     </Router>

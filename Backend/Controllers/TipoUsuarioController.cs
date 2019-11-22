@@ -76,6 +76,8 @@ namespace Backend.Controllers {
             if (tipo_usuario == null) {
                 return NotFound ();
             }
+            await _repositorio.Excluir (tipo_usuario);
+
             return tipo_usuario;
         }
 

@@ -88,6 +88,8 @@ namespace Backend.Controllers {
             if (evento == null) {
                 return NotFound ();
             }
+            await _repositorio.Excluir (evento);
+
             return evento;
         }
 

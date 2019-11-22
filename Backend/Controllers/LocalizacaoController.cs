@@ -76,6 +76,7 @@ namespace Backend.Controllers {
             if (localizacao == null) {
                 return NotFound ();
             }
+            await _repositorio.Excluir (localizacao);
 
             return localizacao;
         }

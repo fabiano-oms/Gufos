@@ -76,6 +76,8 @@ namespace Backend.Controllers {
             if (presenca == null) {
                 return NotFound ();
             }
+            await _repositorio.Excluir (presenca);
+
             return presenca;
         }
 
