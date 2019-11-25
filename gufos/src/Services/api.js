@@ -5,6 +5,7 @@ const api = Axios.create({
     headers: {
         "Content-Type" : "application/json",
         "Authorization" : "Bearer " + localStorage.getItem("usuario-gufos")
+        //TEM QUE TER UM ESPAÇO DPS DE BEARER = "Bearer "
     }
 });
 

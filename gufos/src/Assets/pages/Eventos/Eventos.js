@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import Footer from '../../components/Footer/Footer'
 import Header from '../../components/Header/Header';
 
-import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput } from 'mdbreact';
-import api from '../../../Services/api';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBAlert } from 'mdbreact';
+// import api from '../../../Services/api';
 
 
 class Eventos extends Component {
@@ -78,6 +78,7 @@ class Eventos extends Component {
             .then(data => this.setState({ listaLocalizacao: data }))
     }
 
+    //postSetState
     atualizaEstado = (input) => {
         let nomePropriedade = input.target.name;
         this.setState({
@@ -90,34 +91,26 @@ class Eventos extends Component {
     //Abre quando clica em alterar
     alterarEvento = (evento) => {
         console.log(evento);
-
         this.setState({
             editarModal: {
                 idEventoInput: evento.idEvento,
                 tituloEventoInput: evento.tituloEvento,
-                dataEventoInput: evento.dataEvento,
+                dataEventoInput: evento.dataEvento.split('T')[0],
                 acessoLivreInput: evento.acessoLivre,
-                idCategoriaInput: evento.idCategoria,
+                idCategoriaInput: evento.idCategoriaNavigation.idCategoria,
                 idLocalizacaoInput: evento.idLocalizacao,
             }
         })
+
         // 23 - abrir modal
         this.toggle();
     }
-    atualizaEstadoModal = (input) => {
-        this.setState({
-            editarModal: {
-                ...this.state.editarModal,
-                [input.target.name]: input.target.value
-            }
-        })
-    }
-
     //------------------------- ÍNICIO DOS MÉTODOS DE EVENTOS --------------------------------------
 
     // GET - Eventos
     listagemEventos = () => {
-        api.get("/Evento")
+        fetch("http://localhost:5000/api/Evento")
+            .then(response => response.json())
             .then(data =>
                 this.setState({ listaEventos: data })
             )
@@ -125,6 +118,18 @@ class Eventos extends Component {
                 console.log(error);
             })
     }
+
+    // listagemEventos = () => {
+    //     api.get("/Evento")
+    //         .then(response => response.json())
+    //         .then(data =>
+    //             this.setState({ listaEventos: data })
+    //         )
+    //         .catch(error => {
+    //             console.log(error);
+    //         })
+    // }
+
     // POST
     cadastrarEvento = (cadastro) => {
         cadastro.preventDefault();
@@ -156,7 +161,7 @@ class Eventos extends Component {
             //     console.log(response);
             //     this.listagemCategorias();
             //     this.setState(() => ({ listaCategorias: this.state.listaCategorias }))
-            // })
+            // }) 
             .catch(error => console.log(error))
     }
 
@@ -195,12 +200,13 @@ class Eventos extends Component {
 
         let eventoAlterado = {
             idEvento: this.state.editarModal.idEventoInput,
-            tituloEvento: (this.state.editarModal.tituloEventoInput),
-            dataEvento: this.state.editarModal.dataEventoInput,
+            tituloEvento: this.state.editarModal.tituloEventoInput,
+            dataEvento: (this.state.editarModal.dataEventoInput),
             acessoLivre: (this.state.editarModal.acessoLivreInput === "0") ? false : true,
             idCategoria: this.state.editarModal.idCategoriaInput,
             idLocalizacao: this.state.editarModal.idLocalizacaoInput,
         }
+        console.log(eventoAlterado);
 
         // Rodar a aplicação na porta 5000 e em http
         // 34 - foi modificado de "+ id" para "+ this.state.editarModal.idCategoria"
@@ -209,7 +215,9 @@ class Eventos extends Component {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(eventoAlterado)
+            body: JSON.stringify(
+                eventoAlterado
+            )
         })
             .then(response => response.json())
             .catch(error => console.log(error))
@@ -221,6 +229,14 @@ class Eventos extends Component {
 
         // fechar o modal
         this.toggle();
+    }
+    atualizaEstadoModal = (input) => {
+        this.setState({
+            editarModal: {
+                ...this.state.editarModal,
+                [input.target.name]: input.target.value
+            }
+        })
     }
 
     //-------------------------- FIM DOS MÉTODOS ------------------------------------------
@@ -259,16 +275,23 @@ class Eventos extends Component {
                                                 <tr key={evento.idEvento}>
                                                     <td>{evento.idEvento}</td>
                                                     <td>{evento.tituloEvento}</td>
-                                                    <td>{evento.dataEvento}</td>
+                                                    <td>{(evento.dataEvento).split('T')[0]}</td>
                                                     {/* [(objeto)? 'Verdade': 'Falso'] utilizado para poder exibir variável booleana, já alterando de true/false para um valor string*/}
                                                     <td>{(evento.acessoLivre) ? 'Livre' : 'Restrito'}</td>
                                                     {/* tabela.idEstrangeiroNavigation.QualquerObjeto */}
-                                                    <td>{evento.idCategoria ? evento.idCategoriaNavigation.tituloCategoria : "Categoria não especificada"} </td>
+                                                    <td>{(evento.idCategoria) ? evento.idCategoriaNavigation.tituloCategoria : "Categoria não especificada"}</td>
                                                     {/* Comentado até criar o cadastro de Endereço */}
-                                                    <td>{evento.idLocalizacao ? evento.idLocalizacaoNavigation.endereco : "Localização não especificada"}</td>
+                                                    <td>{(evento.idLocalizacao) ? evento.idLocalizacaoNavigation.endereco : "Localização não especificada"}</td>
                                                     <td>
-                                                        <button onClick={e => this.alterarEvento(evento)}>Alterar</button>
-                                                        <button onClick={e => this.deletarEvento(evento.idEvento)}>Excluir</button>
+                                                        <MDBBtn color="primary" size="sm" onClick={e => this.alterarEvento(evento)}>
+                                                            Alterar
+                                                            <i className="fas fa-edit"></i>
+                                                        </MDBBtn>
+                                                        <br />
+                                                        <MDBBtn color="danger" size="sm" onClick={e => this.deletarEvento(evento.idEvento)}>
+                                                            Excluir
+                                                            <i className="fas fa-trash"></i>
+                                                        </MDBBtn>
                                                     </td>
                                                 </tr>
                                             )
@@ -324,7 +347,7 @@ class Eventos extends Component {
                                         name="tituloCategoriaInput"
                                         onChange={this.atualizaEstado}
                                     >
-                                        {/* <option disabled Value="Selecione uma Categoria...">Selecione uma Categoria...</option> */}
+                                        <option disabled value="">Selecione uma Categoria...</option>
                                         {
                                             this.state.listaCategorias.map(function (categoria) {
                                                 return (
@@ -342,6 +365,7 @@ class Eventos extends Component {
                                         name="enderecoInput"
                                         onChange={this.atualizaEstado}
                                     >
+                                        <option disabled value="">Selecione uma Localização...</option>
                                         {
                                             this.state.listaLocalizacao.map(function (localizacao) {
                                                 return (
@@ -357,7 +381,14 @@ class Eventos extends Component {
                                 >
                                     Cadastrar
                                 </button>
+                                {
+                                    this.state.erroMsg &&
+                                    <MDBAlert color="danger">
+                                        {this.state.erroMsg}
+                                    </MDBAlert>
+                                }
                             </form>
+
 
                             {/* INICIO DO MODAL */}
                             <MDBContainer>
@@ -371,6 +402,7 @@ class Eventos extends Component {
                                             {/* TITULO MODAL*/}
                                             <MDBInput
                                                 label="Evento"
+                                                type="text"
                                                 value={this.state.editarModal.tituloEventoInput}
                                                 name="tituloEventoInput"
                                                 onChange={this.atualizaEstadoModal}
@@ -392,15 +424,28 @@ class Eventos extends Component {
                                                 name="acessoLivreInput"
                                                 onChange={this.atualizaEstadoModal}
                                             >
-                                                <option value="1">Livre</option>
-                                                <option value="0">Restrito</option>
+                                                {
+                                                    (this.state.editarModal.acessoLivreInput === true) ?
+                                                        (
+                                                            <>
+                                                                <option value="1">Livre</option>
+                                                                <option value="0">Restrito</option>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <option value="0">Restrito</option>
+                                                                <option value="1">Livre</option>
+                                                            </>
+                                                        )
+                                                }
+
                                             </select>
 
                                             {/* CATEGORIA MODAL*/}
                                             <select
                                                 label="Categoria"
-                                                value={this.state.editarModal.tituloCategoriaInput}
-                                                name="tituloCategoriaInput"
+                                                value={this.state.editarModal.idCategoriaInput}
+                                                name="idCategoriaInput"
                                                 onChange={this.atualizaEstadoModal}
                                             >
                                                 {
@@ -415,8 +460,8 @@ class Eventos extends Component {
                                             {/* ENDEREÇO MODAL*/}
                                             <select
                                                 label="Localização"
-                                                value={this.state.editarModal.enderecoInput}
-                                                name="enderecoInput"
+                                                value={this.state.editarModal.idLocalizacaoInput}
+                                                name="idLocalizacaoInput"
                                                 onChange={this.atualizaEstadoModal}
                                             >
                                                 {

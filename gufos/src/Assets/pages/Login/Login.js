@@ -49,6 +49,12 @@ class Login extends Component {
         //     senha:this.state.senha
         // }, config)
         //-------------------------------------------------------
+
+        // Mostra o loading da requisição, para evitar várias tentativas
+        this.setState({
+            isLoading : true
+        })
+
         api.post("/login", {
             email:this.state.email,
             senha:this.state.senha

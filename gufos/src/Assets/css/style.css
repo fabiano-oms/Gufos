@@ -371,6 +371,7 @@ body {
   /* Safari */
   transition-duration: 0.4s;
   cursor: pointer;
+  display: flex;
 }
 
 .conteudoPrincipal-btn-cadastro {
