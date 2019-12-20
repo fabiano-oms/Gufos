@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import Footer from '../../components/Footer/Footer'
 import Header from '../../components/Header/Header';
 
-import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBAlert } from 'mdbreact';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInput, MDBAlert, MDBNotification } from 'mdbreact';
 // import api from '../../../Services/api';
-
+// import toast ToastContainer
 
 class Eventos extends Component {
 
@@ -30,7 +30,10 @@ class Eventos extends Component {
                 acessoLivreInput: "",
                 idCategoriaInput: "",
                 idLocalizacaoInput: "",
-            }
+            },
+
+            erroMsg: "",
+            successMsg: "",
         }
         // this.cadastrarEvento = this.cadastrarEvento.bind(this);
     }
@@ -105,6 +108,15 @@ class Eventos extends Component {
         // 23 - abrir modal
         this.toggle();
     }
+
+    atualizaEstadoModal = (input) => {
+        this.setState({
+            editarModal: {
+                ...this.state.editarModal,
+                [input.target.name]: input.target.value
+            }
+        })
+    }
     //------------------------- ÍNICIO DOS MÉTODOS DE EVENTOS --------------------------------------
 
     // GET - Eventos
@@ -162,7 +174,8 @@ class Eventos extends Component {
             //     this.listagemCategorias();
             //     this.setState(() => ({ listaCategorias: this.state.listaCategorias }))
             // }) 
-            .catch(error => console.log(error))
+            .catch(error => console.log(error),
+            this.setState({ erroMsg: "Todos os campos devem ser preenchidos"}))
     }
 
     // DELETE
@@ -170,6 +183,7 @@ class Eventos extends Component {
         console.log("Excluindo");
 
         // this.setState({ erroMsg: "" })
+        this.setState({successMsg: ""});
 
         fetch("http://localhost:5000/api/Evento/" + id, {
             method: "DELETE",
@@ -191,17 +205,23 @@ class Eventos extends Component {
                 //     erroMsg: "Não é possível excluir esta categoria, verifique se não há eventos que a utilizem"
                 // })
             })
+            this.setState({ successMsg: "Evento excluido com sucesso!"});
+            setTimeout(() => {
+                this.listagemEventos();
+            }, 1000)
     }
 
     // PUT
     salvarAltEvento = (event) => {
         // Previne que a página seja recarregada, a fim de não perder informações ja preenchidas
         event.preventDefault();
-
+        this.setState({ erroMsg: "" });
+        this.setState({ successMsg: "" });
         let eventoAlterado = {
             idEvento: this.state.editarModal.idEventoInput,
             tituloEvento: this.state.editarModal.tituloEventoInput,
             dataEvento: (this.state.editarModal.dataEventoInput),
+            // dataEvento: (this.state.editarModal.dataEventoInput + this.state.editarModal.horaEventoInput),
             acessoLivre: (this.state.editarModal.acessoLivreInput === "0") ? false : true,
             idCategoria: this.state.editarModal.idCategoriaInput,
             idLocalizacao: this.state.editarModal.idLocalizacaoInput,
@@ -219,9 +239,15 @@ class Eventos extends Component {
                 eventoAlterado
             )
         })
-            .then(response => response.json())
-            .catch(error => console.log(error))
-
+        .then(response => response.json())
+        .then( () => {
+            this.setState({ successMsg: "Evento alterado com sucesso" })
+        })
+        .catch(error => 
+            console.log(error),
+            this.setState({ erroMsg: "Não foi possível alterar o Evento" })
+        )
+        
         // Atraso na requisição, "carregamento muito rápido pode quebrar o código" pois são assíncronos, e este código não pode carregar primeiro
         setTimeout(() => {
             this.listagemEventos();
@@ -230,14 +256,7 @@ class Eventos extends Component {
         // fechar o modal
         this.toggle();
     }
-    atualizaEstadoModal = (input) => {
-        this.setState({
-            editarModal: {
-                ...this.state.editarModal,
-                [input.target.name]: input.target.value
-            }
-        })
-    }
+    
 
     //-------------------------- FIM DOS MÉTODOS ------------------------------------------
 
@@ -275,6 +294,8 @@ class Eventos extends Component {
                                                 <tr key={evento.idEvento}>
                                                     <td>{evento.idEvento}</td>
                                                     <td>{evento.tituloEvento}</td>
+                                                    {}
+                                                    {/* <td>{DateFormat('pt-BR', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format((evento.dataEvento).split('T')[0])}</td> */}
                                                     <td>{(evento.dataEvento).split('T')[0]}</td>
                                                     {/* [(objeto)? 'Verdade': 'Falso'] utilizado para poder exibir variável booleana, já alterando de true/false para um valor string*/}
                                                     <td>{(evento.acessoLivre) ? 'Livre' : 'Restrito'}</td>
@@ -381,6 +402,17 @@ class Eventos extends Component {
                                 >
                                     Cadastrar
                                 </button>
+                                {
+                                    this.state.erroMsg &&
+                                    <MDBAlert color="danger">
+                                        {this.state.erroMsg}
+                                    </MDBAlert>
+                                }
+                                {/* <MDBNotification
+                                    show
+                                    fade
+                                    iconClassName
+                                ></MDBNotification> */}
                                 {
                                     this.state.erroMsg &&
                                     <MDBAlert color="danger">

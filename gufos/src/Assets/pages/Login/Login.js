@@ -85,7 +85,7 @@ class Login extends Component {
                 console.log("PAYLOAD JSON:" + JSON.parse(window.atob(base64)))
 
                 // tipo do usuário logado
-                console.log(parseJwt().Role)
+                console.log("ROLE:" + parseJwt().Role)
 
                 if (parseJwt().Role === "1"){
                 // console.log(this.props)
